@@ -1,7 +1,6 @@
-#include "color.h"
-#include "vec3.h"
-#include "ray.h"
+#include "lum_utilities.h"
 
+using namespace Lumina;
 color ray_color(const Ray& r) 
 {
   vec3 unit_direction = unit_vector(r.getDirection());
