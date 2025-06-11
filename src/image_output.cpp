@@ -1,13 +1,14 @@
-#include "image_output.h"
-#include "lum_color.h"
 #include <fstream>
+#include <iostream>
+#include <string>
 #include <vector>
-#include <stdexcept>
+#include "lum_color.h"
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
 namespace Lumina 
 {
-
 // Global variables to store image data
 static std::ofstream ppm_file;
 static std::vector<unsigned char> png_data;
@@ -58,8 +59,45 @@ void close_ppm_file(const std::string& filename) {
 
 void close_png_file(const std::string& filename) {
     if (!png_data.empty()) {
-        stbi_write_png(filename.c_str(), png_width, png_height, 3, png_data.data(), png_width * 3);
+        if (!stbi_write_png(filename.c_str(), png_width, png_height, 3, png_data.data(), png_width * 3)) {
+            std::cerr << "Error: Could not write PNG file " << filename << std::endl;
+        }
         png_data.clear();
+    }
+}
+
+void write_ppm(const std::string& filename, const std::vector<color>& pixels, int width, int height) {
+    std::ofstream out(filename);
+    if (!out) {
+        std::cerr << "Error: Could not open file " << filename << " for writing" << std::endl;
+        return;
+    }
+
+    // Write PPM header
+    out << "P3\n" << width << " " << height << "\n255\n";
+
+    // Write pixel data
+    for (const auto& pixel : pixels) {
+        // Convert from [0,1] to [0,255] and clamp
+        int r = static_cast<int>(256 * std::clamp(pixel.x(), 0.0, 0.999));
+        int g = static_cast<int>(256 * std::clamp(pixel.y(), 0.0, 0.999));
+        int b = static_cast<int>(256 * std::clamp(pixel.z(), 0.0, 0.999));
+        out << r << " " << g << " " << b << "\n";
+    }
+}
+
+void write_png(const std::string& filename, const std::vector<color>& pixels, int width, int height) {
+    // Convert pixels to RGB format
+    std::vector<unsigned char> rgb_data(width * height * 3);
+    for (int i = 0; i < pixels.size(); ++i) {
+        rgb_data[i * 3] = static_cast<unsigned char>(256 * std::clamp(pixels[i].x(), 0.0, 0.999));
+        rgb_data[i * 3 + 1] = static_cast<unsigned char>(256 * std::clamp(pixels[i].y(), 0.0, 0.999));
+        rgb_data[i * 3 + 2] = static_cast<unsigned char>(256 * std::clamp(pixels[i].z(), 0.0, 0.999));
+    }
+
+    // Write PNG file
+    if (!stbi_write_png(filename.c_str(), width, height, 3, rgb_data.data(), width * 3)) {
+        std::cerr << "Error: Could not write PNG file " << filename << std::endl;
     }
 }
 

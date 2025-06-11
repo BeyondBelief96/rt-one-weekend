@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lum_ray.h"
+#include "lum_interval.h"
 
 namespace Lumina
 {
@@ -27,7 +28,7 @@ namespace Lumina
   {
     public:
       virtual ~Hittable() = default;
-      virtual bool hit(const Ray& r, double ray_t_min, double ray_t_max, hit_record& rec) const = 0;
+      virtual bool hit(const Ray& r, Interval ray_t_interval, hit_record& rec) const = 0;
     private:
 
   };

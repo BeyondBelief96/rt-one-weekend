@@ -4,10 +4,10 @@ namespace Lumina
 {
   Sphere::Sphere(point3 center, double radius) : center(center), radius(radius) {};
 
-  bool Sphere::hit(const Ray& r, double ray_t_min, double ray_t_max, hit_record& rec) const
+  bool Sphere::hit(const Ray& r, Interval ray_t_interval, hit_record& rec) const
   {
-    // Vector from the center of the sphere to the origin of the ray.
-    vec3 oc = r.getOrigin() - center;
+    // Vector from the ray origin to the center of the sphere.
+    vec3 oc = center - r.getOrigin();
     // The length squared of the direction of the ray.
     double a = r.getDirection().length_squared();
     // The dot product of the direction of the ray and the vector from the center of the sphere to the origin of the ray.
@@ -25,11 +25,11 @@ namespace Lumina
     double root = (h - sqrtd) / a;
 
     // Check if the root is within the range of the ray.
-    if (root <= ray_t_min || ray_t_max <= root)
+    if (!ray_t_interval.contains(root))
     {
       // Check the other root.
       root = (h + sqrtd) / a;
-      if (root <= ray_t_min || ray_t_max <= root)
+      if (!ray_t_interval.contains(root))
       {
         // If both roots are outside the range of the ray, return false.
         return false;

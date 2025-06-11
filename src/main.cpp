@@ -1,25 +1,24 @@
 #include "lum_utilities.h"
+#include "image_output.h"
+#include "lum_sphere.h"
+#include "lum_hittable.h"
+#include "hittable_list.h"
+#include <vector>
 
 using namespace Lumina;
-color ray_color(const Ray& r) 
-{
-  vec3 unit_direction = unit_vector(r.getDirection());
 
-  // Calculate the interpolation factor 'a' based on the y component of the unit direction vector.
-  // The y component is normalized to the range [0, 1] by adding 1.0 and multiplying by 0.5.
-  // This effectively maps the range [-1, 1] to [0, 1].
-  // The y component of the unit direction vector is used to create a gradient effect in the sky.
-  // The value of 'a' will be 0.0 when the y component is -1 (looking straight down) and 1.0 when the y component is 1 (looking straight up).
-  // This creates a smooth transition from white at the top of the sky to light blue at the bottom.
-  double a = 0.5 * (unit_direction.y() + 1.0);
 
-  // Interpolate between white and a light blue color based on the y component of the ray direction.
-  // The y component is used to create a gradient effect in the sky.
-  // The color is white at the top (y = 1) and light blue at the bottom (y = -1).
-  // The color is calculated as a linear interpolation between white (1.0, 1.0, 1.0) and light blue (0.5, 0.7, 1.0).
-  // The interpolation factor 'a' is clamped between 0 and 1.
-  return (1.0f - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
+color ray_color(const Ray& r, const Hittable& world) {
+    hit_record rec;
+    if (world.hit(r, Interval(0, infinity), rec)) {
+        return 0.5 * (rec.normal + color(1,1,1));
+    }
+
+    vec3 unit_direction = unit_vector(r.getDirection());
+    auto a = 0.5*(unit_direction.y() + 1.0);
+    return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
 }
+
 
 int main() 
 {
@@ -28,6 +27,12 @@ int main()
   int image_width = 1920;
   int image_height = int(image_width / aspect_ratio);
   image_height = (image_height < 1) ? 1 : image_height;
+
+  // World setup
+
+  HittableList world;
+  world.add(std::make_shared<Sphere>(point3(0,0,-1), 0.5));
+  world.add(std::make_shared<Sphere>(point3(0,-100.5,-1), 100));
 
   // Camera setup.
   double focal_length = 1.0;
@@ -54,12 +59,12 @@ int main()
   // The pixel at (0, 0) is offset by half a pixel in both u and v directions.
   point3 pixel00_location = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
-  // Initialize the PPM file
-  std::string output_file = "image.ppm";
-  init_ppm_file(output_file, image_width, image_height);
+  // Create a vector to store all pixels
+  std::vector<color> pixels;
+  pixels.reserve(image_width * image_height);
 
-  // Output to console as before
-  std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
+  // Output progress to console
+  std::cout << "Rendering image...\n";
 
   for (int j = 0; j < image_height; j++)
   {
@@ -74,15 +79,16 @@ int main()
       // Create a ray from the camera to the pixel center.
       Ray r(camera_position, ray_direction);
 
-      color pixel_color = ray_color(r);
-      
-      // Write to console
-      write_color(std::cout, pixel_color);
-      
-      // Write to file
-      write_color_to_file(output_file, pixel_color);
+      color pixel_color = ray_color(r, world);
+      pixels.push_back(pixel_color);
     }
   }
 
-  std::clog << "\nDone.\n";
+  std::clog << "\nWriting output files...\n";
+
+  // Write both PPM and PNG files
+  write_ppm("output.ppm", pixels, image_width, image_height);
+  write_png("output.png", pixels, image_width, image_height);
+
+  std::clog << "Done.\n";
 }

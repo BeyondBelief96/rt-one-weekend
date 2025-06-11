@@ -7,6 +7,7 @@
 #include "lum_color.h"
 #include "lum_ray.h"
 #include "vec3.h"
+#include "lum_interval.h"
 
 using std::numeric_limits;
 namespace Lumina
