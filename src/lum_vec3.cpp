@@ -1,4 +1,4 @@
-#include "vec3.h"
+#include "lum_vec3.h"
 
 namespace Lumina
 {

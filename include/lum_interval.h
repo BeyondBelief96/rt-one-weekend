@@ -11,6 +11,7 @@ namespace Lumina
       double getMax() const;
       double size() const;
       bool contains(double t) const;
+      double clamp(double t) const;
 
       static const Interval empty, universe;
 

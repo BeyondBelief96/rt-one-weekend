@@ -16,12 +16,14 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 # Add executable
 add_executable(raytracer
  src/main.cpp
- src/vec3.cpp
+ src/lum_vec3.cpp
  src/lum_ray.cpp
  src/lum_sphere.cpp
- src/hittable_list.cpp
+ src/lum_hittable_list.cpp
  src/lum_interval.cpp
- src/image_output.cpp)
+ src/image_output.cpp
+ src/lum_camera.cpp)
+
 
 # Set output directories
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

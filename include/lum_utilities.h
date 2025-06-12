@@ -3,15 +3,17 @@
 #include <cmath>
 #include <limits>
 #include <memory>
+#include <random>
 #include <vector>
-#include "lum_color.h"
 #include "lum_ray.h"
-#include "vec3.h"
+#include "lum_vec3.h"
 #include "lum_interval.h"
 
 using std::numeric_limits;
 namespace Lumina
 {
+    // aliases
+    using color = vec3;
     // constants
     const double infinity = numeric_limits<double>::infinity();
     const double pi = 3.1415926535897932385;
@@ -20,6 +22,20 @@ namespace Lumina
 
     inline double degrees_to_radians(double degrees)
     {
-    return degrees * pi / 180.0;
+        return degrees * pi / 180.0;
+    }
+
+    // Returns a random number in the range of [0,1)
+    inline double random_double()
+    {
+        static std::uniform_real_distribution<double> distribution(0.0, 1.0);
+        static std::mt19937 generator;
+        return distribution(generator);
+    }
+
+    // Returns a random number in the range of [min,max)
+    inline double random_double(double min, double max)
+    {
+        return min + (max - min) * random_double();
     }
 }
