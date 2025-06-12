@@ -31,6 +31,9 @@ namespace Lumina
 
       double length() const;
       double length_squared() const;
+
+      static vec3 random();
+      static vec3 random(double min, double max);
   };
 
   // point3 alias for geometric points
