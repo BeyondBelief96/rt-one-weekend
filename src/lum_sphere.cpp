@@ -11,7 +11,7 @@ namespace Lumina
     // The length squared of the direction of the ray.
     double a = r.getDirection().length_squared();
     // The dot product of the direction of the ray and the vector from the center of the sphere to the origin of the ray.
-    double h = dot(r.getDirection(), oc);
+    double h = r.getDirection().dot(oc);
     // The length squared of the vector from the center of the sphere to the origin of the ray minus the radius squared.
     double c = oc.length_squared() - radius * radius;
     double discriminant = h * h - a * c;

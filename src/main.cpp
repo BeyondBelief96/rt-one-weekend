@@ -25,10 +25,6 @@ int main(int argc, char* argv[])
     // Create output directory if it doesn't exist
     std::filesystem::create_directory("output");
 
-    // Image dimensions and setup
-    double aspect_ratio = 16.0 / 9.0;
-    int image_width = 1920;
-
     // World setup
     HittableList world;
     world.add(std::make_shared<Sphere>(point3(0,0,-1), 0.5));

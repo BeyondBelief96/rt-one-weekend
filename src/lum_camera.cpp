@@ -4,42 +4,6 @@
 
 namespace Lumina
 {
-    void Camera::Render(const Hittable& world, const std::string& output_file)
-    {
-        // Create a vector to store all pixels
-        std::vector<color> pixels;
-        pixels.reserve(image_width * image_height);
-
-        // Output progress to console
-        std::cout << "Rendering image...\n";
-
-        // Render the image row by row, from top to bottom
-        for (int j = 0; j < image_height; j++)
-        {
-            std::clog << "\rScanlines remaining: " << (image_height - j) << " " << std::flush;
-            for (int i = 0; i < image_width; i++)
-            {
-                color pixel_color(0, 0, 0);
-                for(int s = 0; s < samples_per_pixel; s++)
-                {
-                    Ray r = get_ray(i, j);
-                    pixel_color += ray_color(r, world);
-                }
-
-                // Average the samples
-                pixel_color = pixel_color * pixel_samples_scale;
-                pixels.push_back(pixel_color);
-            }
-        }
-
-        std::clog << "\nWriting output files...\n";
-
-        // Write both PPM and PNG files
-        write_ppm(output_file + ".ppm", pixels, image_width, image_height);
-        write_png(output_file + ".png", pixels, image_width, image_height);
-
-        std::clog << "Done.\n";
-    }
 
     void Camera::Initialize()
     {
@@ -86,21 +50,61 @@ namespace Lumina
         // This centers the first pixel in its grid cell
         pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
     }
-
-    color Camera::ray_color(const Ray& r, const Hittable& world) const
+    
+    void Camera::Render(const Hittable& world, const std::string& output_file)
     {
+        // Create a vector to store all pixels
+        std::vector<color> pixels;
+        pixels.reserve(image_width * image_height);
+
+        // Output progress to console
+        std::cout << "Rendering image...\n";
+
+        // Render the image row by row, from top to bottom
+        for (int j = 0; j < image_height; j++)
+        {
+            std::clog << "\rScanlines remaining: " << (image_height - j) << " " << std::flush;
+            for (int i = 0; i < image_width; i++)
+            {
+                color pixel_color(0, 0, 0);
+                for(int s = 0; s < samples_per_pixel; s++)
+                {
+                    Ray r = get_ray(i, j);
+                    pixel_color += ray_color(r, world, max_depth);
+                }
+
+                // Average the samples
+                pixel_color = pixel_color * pixel_samples_scale;
+                pixels.push_back(pixel_color);
+            }
+        }
+
+        std::clog << "\nWriting output files...\n";
+
+        // Write both PPM and PNG files
+        write_ppm(output_file + ".ppm", pixels, image_width, image_height);
+        write_png(output_file + ".png", pixels, image_width, image_height);
+
+        std::clog << "Done.\n";
+    }
+
+    color Camera::ray_color(const Ray& r, const Hittable& world, int depth) const
+    {
+        // If we've exceeded the ray bounce limit, no more light is gathered
+        if (depth <= 0)
+            return color(0,0,0);
+
         hit_record rec;
         // Check if the ray hits any object in the world
-        if (world.hit(r, Interval(0, infinity), rec)) {
-            // If there's a hit, visualize the normal vector as a color
-            // Normal vectors are in range [-1,1], so we add 1 to get [0,2]
-            // Then multiply by 0.5 to get back to [0,1] range for colors
-            return 0.5 * (rec.normal + color(1,1,1));
+        if (world.hit(r, Interval(0.001, infinity), rec)) {
+            vec3 direction = vec3::random_on_hemisphere(rec.normal);
+            // Scatter the ray from the hit point in a random direction, we'll do this recursively
+            // until we reach the maximum depth.
+            return 0.5 * ray_color(Ray(rec.p, direction), world, depth-1);
         }
 
         // If no hit, create a sky gradient
-        // The gradient goes from white at the top to light blue at the bottom
-        vec3 unit_direction = unit_vector(r.getDirection());
+        vec3 unit_direction = r.getDirection().unit_vector();
         auto a = 0.5*(unit_direction.y() + 1.0);  // Map y from [-1,1] to [0,1]
         return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
     }
