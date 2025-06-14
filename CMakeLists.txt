@@ -22,7 +22,8 @@ add_executable(raytracer
  src/lum_hittable_list.cpp
  src/lum_interval.cpp
  src/image_output.cpp
- src/lum_camera.cpp)
+ src/lum_camera.cpp
+ src/materials/lum_lambertian.cpp)
 
 
 # Set output directories

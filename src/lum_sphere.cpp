@@ -4,7 +4,7 @@ namespace Lumina
 {
   Sphere::Sphere(point3 center, double radius) : center(center), radius(radius) {};
 
-  bool Sphere::hit(const Ray& r, Interval ray_t_interval, hit_record& rec) const
+  bool Sphere::hit(const Ray& r, Interval ray_t_interval, HitRecord& rec) const
   {
     // Vector from the ray origin to the center of the sphere.
     vec3 oc = center - r.getOrigin();
@@ -42,6 +42,7 @@ namespace Lumina
     // The outward normal is the direction of the ray at the point of intersection.
     vec3 outward_normal = (rec.p - center) / radius;
     rec.set_face_normal(r, outward_normal);
+    rec.material = material;  
     return true;
     }
 }

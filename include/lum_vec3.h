@@ -47,6 +47,7 @@ namespace Lumina
       static vec3 random(double min, double max);
       static vec3 random_unit_vector_in_unit_sphere();
       static vec3 random_on_hemisphere(const vec3& normal);
+      static bool near_zero(const vec3& v);
   };
 
   // point3 alias for geometric points

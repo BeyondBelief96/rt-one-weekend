@@ -38,4 +38,16 @@ namespace Lumina
     {
         return min + (max - min) * random_double();
     }
+
+    inline double linear_to_gamma_2(double linear_component)
+    {
+        if (linear_component > 0.0)
+        {
+            return sqrt(linear_component);
+        }
+        else
+        {
+            return 0.0;
+        }
+    }
 }

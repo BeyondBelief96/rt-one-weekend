@@ -32,7 +32,7 @@ namespace Lumina
             vec3   pixel_delta_v;  // Offset to pixel below
 
             // Camera setup
-            color ray_color(const Ray& r, const Hittable& world, int depth) const;
+            color ray_color(const Ray& r, const Hittable& world, int depth, bool use_lambertian_scatter = true) const;
             Ray get_ray(int i, int j) const;
             vec3 sample_square() const;
     };

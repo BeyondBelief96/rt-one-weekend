@@ -17,9 +17,9 @@ namespace Lumina
         objects.push_back(object);
     }
 
-    bool HittableList::hit(const Ray& r, Interval ray_t_interval, hit_record& rec) const
+    bool HittableList::hit(const Ray& r, Interval ray_t_interval, HitRecord& rec) const
     {
-        hit_record temp_rec;
+        HitRecord temp_rec;
         bool hit_anything = false;
         auto closest_so_far = ray_t_interval.getMax();
 

@@ -2,14 +2,18 @@
 
 #include "lum_ray.h"
 #include "lum_interval.h"
+#include <memory>
 
 namespace Lumina
 {
-  struct hit_record
+
+  class Material;
+  struct HitRecord
   {
     point3 p;
     vec3 normal;
     double t;
+    std::shared_ptr<Material> material;
     bool front_face;
 
     // Set the face normal of the hit record.
@@ -28,7 +32,7 @@ namespace Lumina
   {
     public:
       virtual ~Hittable() = default;
-      virtual bool hit(const Ray& r, Interval ray_t_interval, hit_record& rec) const = 0;
+      virtual bool hit(const Ray& r, Interval ray_t_interval, HitRecord& rec) const = 0;
     private:
 
   };

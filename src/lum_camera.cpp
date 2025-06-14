@@ -50,7 +50,7 @@ namespace Lumina
         // This centers the first pixel in its grid cell
         pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
     }
-    
+
     void Camera::Render(const Hittable& world, const std::string& output_file)
     {
         // Create a vector to store all pixels
@@ -88,16 +88,16 @@ namespace Lumina
         std::clog << "Done.\n";
     }
 
-    color Camera::ray_color(const Ray& r, const Hittable& world, int depth) const
+    color Camera::ray_color(const Ray& r, const Hittable& world, int depth, bool use_lambertian_scatter) const
     {
         // If we've exceeded the ray bounce limit, no more light is gathered
         if (depth <= 0)
             return color(0,0,0);
 
-        hit_record rec;
+        HitRecord rec;
         // Check if the ray hits any object in the world
         if (world.hit(r, Interval(0.001, infinity), rec)) {
-            vec3 direction = vec3::random_on_hemisphere(rec.normal);
+            vec3 direction = use_lambertian_scatter ? rec.normal + vec3::random_on_hemisphere(rec.normal) : vec3::random_unit_vector_in_unit_sphere();
             // Scatter the ray from the hit point in a random direction, we'll do this recursively
             // until we reach the maximum depth.
             return 0.5 * ray_color(Ray(rec.p, direction), world, depth-1);

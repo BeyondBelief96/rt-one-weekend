@@ -134,6 +134,13 @@ namespace Lumina
     }
   }
 
+  bool vec3::near_zero(const vec3& v)
+  {
+    // return true if the vector is close to zero in all dimensions
+    const double eps = 1e-8;
+    return (fabs(v.e[0]) < eps) && (fabs(v.e[1]) < eps) && (fabs(v.e[2]) < eps);
+  }
+
   // Non-member operators that use public interface
   std::ostream& operator<<(std::ostream& out, const vec3& v)
   {

@@ -13,7 +13,7 @@ namespace Lumina
       HittableList(std::shared_ptr<Hittable> object);
       void clear();
       void add(std::shared_ptr<Hittable> object);
-      bool hit(const Ray& r, Interval ray_t_interval, hit_record& rec) const override;
+      bool hit(const Ray& r, Interval ray_t_interval, HitRecord& rec) const override;
     private:
       std::vector<std::shared_ptr<Hittable>> objects;
   };

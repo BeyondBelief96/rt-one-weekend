@@ -30,9 +30,9 @@ namespace Lumina
     }
 
     void color_to_rgb(const Lumina::color& pixel_color, unsigned char* rgb) {
-        rgb[0] = static_cast<unsigned char>(255.999 * pixel_color.x());
-        rgb[1] = static_cast<unsigned char>(255.999 * pixel_color.y());
-        rgb[2] = static_cast<unsigned char>(255.999 * pixel_color.z());
+        rgb[0] = static_cast<unsigned char>(255.999 * linear_to_gamma_2(pixel_color.x()));
+        rgb[1] = static_cast<unsigned char>(255.999 * linear_to_gamma_2(pixel_color.y()));
+        rgb[2] = static_cast<unsigned char>(255.999 * linear_to_gamma_2(pixel_color.z()));
 }
 
     void close_ppm_file(const std::string& filename) {
@@ -64,9 +64,9 @@ namespace Lumina
         for (const auto& pixel : pixels) {
             // Convert from [0,1] to [0,255] and clamp
             static const Interval intensity(0.000, 0.999);
-            int r = static_cast<int>(256 * intensity.clamp(pixel.x()));
-            int g = static_cast<int>(256 * intensity.clamp(pixel.y()));
-            int b = static_cast<int>(256 * intensity.clamp(pixel.z()));
+            int r = static_cast<int>(256 * intensity.clamp(linear_to_gamma_2(pixel.x())));
+            int g = static_cast<int>(256 * intensity.clamp(linear_to_gamma_2(pixel.y())));
+            int b = static_cast<int>(256 * intensity.clamp(linear_to_gamma_2(pixel.z())));
             out << r << " " << g << " " << b << "\n";
         }
 
@@ -78,9 +78,9 @@ namespace Lumina
         std::vector<unsigned char> rgb_data(width * height * 3);
         for (int i = 0; i < pixels.size(); ++i) {
             static const Interval intensity(0.000, 0.999);
-            rgb_data[i * 3] = static_cast<unsigned char>(256 * intensity.clamp(pixels[i].x()));
-            rgb_data[i * 3 + 1] = static_cast<unsigned char>(256 * intensity.clamp(pixels[i].y()));
-            rgb_data[i * 3 + 2] = static_cast<unsigned char>(256 * intensity.clamp(pixels[i].z()));
+            rgb_data[i * 3] = static_cast<unsigned char>(256 * intensity.clamp(linear_to_gamma_2(pixels[i].x())));
+            rgb_data[i * 3 + 1] = static_cast<unsigned char>(256 * intensity.clamp(linear_to_gamma_2(pixels[i].y())));
+            rgb_data[i * 3 + 2] = static_cast<unsigned char>(256 * intensity.clamp(linear_to_gamma_2(pixels[i].z())));
         }
 
         // Write PNG file
