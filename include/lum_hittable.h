@@ -8,6 +8,10 @@ namespace Lumina
 {
 
   class Material;
+
+  /// <summary>
+  /// Stores information about a hit point on a hittable object.
+  /// </summary>
   struct HitRecord
   {
     point3 p;

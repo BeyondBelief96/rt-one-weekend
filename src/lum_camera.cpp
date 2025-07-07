@@ -4,6 +4,16 @@
 
 namespace Lumina
 {
+    Camera::Camera() : 
+        image_width(800),  // Default width
+        aspect_ratio(16.0 / 9.0),  // Default aspect ratio
+        samples_per_pixel(100),  // Default samples per pixel
+        pixel_samples_scale(1.0 / samples_per_pixel),
+        max_depth(50),  // Default maximum ray depth
+		image_height(int(image_width / aspect_ratio)) // Calculate default height based on aspect ratio and width
+    {
+        Initialize();
+    };
 
     void Camera::Initialize()
     {
@@ -97,7 +107,7 @@ namespace Lumina
         HitRecord rec;
         // Check if the ray hits any object in the world
         if (world.hit(r, Interval(0.001, infinity), rec)) {
-            vec3 direction = use_lambertian_scatter ? rec.normal + vec3::random_on_hemisphere(rec.normal) : vec3::random_unit_vector_in_unit_sphere();
+            vec3 direction = use_lambertian_scatter ? rec.normal + vec3::random_on_hemisphere(rec.normal) : vec3::random_on_hemisphere(rec.normal);
             // Scatter the ray from the hit point in a random direction, we'll do this recursively
             // until we reach the maximum depth.
             return 0.5 * ray_color(Ray(rec.p, direction), world, depth-1);

@@ -22,6 +22,16 @@ namespace Lumina
     return vec3(-e[0], -e[1], -e[2]);
   }
 
+  double vec3::operator[](int i) const
+  {
+      return e[i];
+  }
+
+  double& vec3::operator[](int i)
+  {
+      return e[i];
+  }
+
   double vec3::x() const { return e[0]; }
   double vec3::y() const { return e[1]; }
   double vec3::z() const { return e[2]; }
@@ -112,6 +122,10 @@ namespace Lumina
     return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
   }
 
+  /// <summary>
+  /// Generates a random unit vector that lies within a unit sphere.
+  /// </summary>
+  /// <returns>A vec3 that lies on a point on a unit sphere.</returns>
   vec3 vec3::random_unit_vector_in_unit_sphere()
   {
     while(true) {
@@ -123,6 +137,12 @@ namespace Lumina
     }
   }
 
+  /// <summary>
+  /// Generates a random unit vector that lies on the surface of a unit sphere
+  /// on the same hemisphere as the given normal vector.
+  /// </summary>
+  /// <param name="normal">The normal vector that defines the hemisphere direction.</param>
+  /// <returns>A vec3 on the unit sphere in the hemisphere the normal vector points towards.</returns>
   vec3 vec3::random_on_hemisphere(const vec3& normal)
   {
     vec3 on_unit_sphere = random_unit_vector_in_unit_sphere();

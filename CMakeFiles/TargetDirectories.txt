@@ -1,3 +1,0 @@
-/Users/brandonberisford/Code/graphics/rt-one-weekend/CMakeFiles/raytracer.dir
-/Users/brandonberisford/Code/graphics/rt-one-weekend/CMakeFiles/edit_cache.dir
-/Users/brandonberisford/Code/graphics/rt-one-weekend/CMakeFiles/rebuild_cache.dir

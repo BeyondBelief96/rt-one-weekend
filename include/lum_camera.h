@@ -12,7 +12,7 @@ namespace Lumina
     class Camera
     {
         public:
-            Camera() = default;
+            Camera();
             void Initialize();
             void Render(const Hittable& world, const std::string& output_file = "output");
 
