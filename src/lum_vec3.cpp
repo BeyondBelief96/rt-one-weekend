@@ -112,6 +112,11 @@ namespace Lumina
     return *this / length();
   }
 
+  vec3 vec3::reflect(const vec3& normal) const  
+  {  
+      return *this - 2 * dot(normal) * normal;  
+  }
+
   vec3 vec3::random()
   {
     return vec3(random_double(), random_double(), random_double());

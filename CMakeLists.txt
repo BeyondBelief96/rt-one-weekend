@@ -23,7 +23,7 @@ add_executable(raytracer
  src/lum_interval.cpp
  src/image_output.cpp
  src/lum_camera.cpp
- src/materials/lum_lambertian.cpp)
+ src/materials/lum_lambertian.cpp "include/materials/lum_metal.h"  "src/materials/lum_metal.cpp" "include/lum_progress_visualizer.h" "src/lum_progress_visualizer.cpp")
 
 
 # Set output directories

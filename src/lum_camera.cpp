@@ -1,5 +1,7 @@
-#include "lum_camera.h"
+﻿#include "lum_camera.h"
 #include "image_output.h"
+#include "materials/lum_material.h"
+#include "lum_progress_visualizer.h"
 #include <iostream>
 
 namespace Lumina
@@ -63,21 +65,20 @@ namespace Lumina
 
     void Camera::Render(const Hittable& world, const std::string& output_file)
     {
+        // Create progress visualizer
+        ProgressVisualizer progress(image_height, 50);
+
         // Create a vector to store all pixels
         std::vector<color> pixels;
         pixels.reserve(image_width * image_height);
 
-        // Output progress to console
-        std::cout << "Rendering image...\n";
-
         // Render the image row by row, from top to bottom
         for (int j = 0; j < image_height; j++)
         {
-            std::clog << "\rScanlines remaining: " << (image_height - j) << " " << std::flush;
             for (int i = 0; i < image_width; i++)
             {
                 color pixel_color(0, 0, 0);
-                for(int s = 0; s < samples_per_pixel; s++)
+                for (int s = 0; s < samples_per_pixel; s++)
                 {
                     Ray r = get_ray(i, j);
                     pixel_color += ray_color(r, world, max_depth);
@@ -87,15 +88,23 @@ namespace Lumina
                 pixel_color = pixel_color * pixel_samples_scale;
                 pixels.push_back(pixel_color);
             }
+
+            // Update progress after each scanline
+            progress.update(j + 1);
         }
 
-        std::clog << "\nWriting output files...\n";
+        // Finish progress display
+        progress.finish();
+
+        std::cout << "Writing output files...\n";
 
         // Write both PPM and PNG files
         write_ppm(output_file + ".ppm", pixels, image_width, image_height);
         write_png(output_file + ".png", pixels, image_width, image_height);
 
-        std::clog << "Done.\n";
+        std::cout << "Files written successfully!\n";
+        std::cout << "   " << output_file << ".ppm\n";
+        std::cout << "   " << output_file << ".png\n\n";
     }
 
     color Camera::ray_color(const Ray& r, const Hittable& world, int depth, bool use_lambertian_scatter) const
@@ -107,10 +116,16 @@ namespace Lumina
         HitRecord rec;
         // Check if the ray hits any object in the world
         if (world.hit(r, Interval(0.001, infinity), rec)) {
-            vec3 direction = use_lambertian_scatter ? rec.normal + vec3::random_on_hemisphere(rec.normal) : vec3::random_on_hemisphere(rec.normal);
-            // Scatter the ray from the hit point in a random direction, we'll do this recursively
-            // until we reach the maximum depth.
-            return 0.5 * ray_color(Ray(rec.p, direction), world, depth-1);
+            Ray scattered_ray;
+            color attenuation;
+            if (rec.material->Scatter(r, rec, attenuation, scattered_ray))
+            {
+                return attenuation * ray_color(scattered_ray, world, depth - 1);
+            }
+            else
+            {
+                return color(0, 0, 0);
+            }
         }
 
         // If no hit, create a sky gradient

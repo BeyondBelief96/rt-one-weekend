@@ -41,6 +41,7 @@ namespace Lumina
       double dot(const vec3& v) const;
       vec3 cross(const vec3& v) const;
       vec3 unit_vector() const;
+      vec3 reflect(const vec3& normal) const;
 
       // Static methods
       static vec3 random();

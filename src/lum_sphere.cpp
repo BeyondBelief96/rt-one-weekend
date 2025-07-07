@@ -2,7 +2,7 @@
 
 namespace Lumina
 {
-  Sphere::Sphere(point3 center, double radius) : center(center), radius(radius) {};
+  Sphere::Sphere(point3 center, double radius, std::shared_ptr<Material> material) : center(center), radius(std::fmax(0, radius)), material(material) {};
 
   bool Sphere::hit(const Ray& r, Interval ray_t_interval, HitRecord& rec) const
   {

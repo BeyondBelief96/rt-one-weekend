@@ -16,11 +16,13 @@ namespace Lumina
             void Initialize();
             void Render(const Hittable& world, const std::string& output_file = "output");
 
+
             // Image settings
             double aspect_ratio = 16.0 / 9.0;  // Ratio of image width to height
             int image_width = 1920;            // Width of the image
             int samples_per_pixel = 10;        // Number of samples per pixel
             int max_depth  = 10;               // Maximum number of ray bounces into scene
+            bool show_progress = true;         // Whether to show progress visualization
 
         private:
             // Camera settings
