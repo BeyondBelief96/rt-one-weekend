@@ -1,7 +1,6 @@
 #pragma once
 
 #include "lum_vec3.h"
-
 namespace Lumina
 {
   class Ray

@@ -78,39 +78,14 @@ namespace Lumina {
         int filled_full = static_cast<int>(filled_exact);
 
         std::cout << "[";
-
-        if (unicode_supported) {
-            // Unicode version with smooth progress
-            double fractional = filled_exact - filled_full;
-
-            // Full blocks
-            for (int i = 0; i < filled_full; ++i) {
-                std::cout << FILLED_CHAR_UNICODE;
+        // ASCII fallback version
+        for (int i = 0; i < bar_width; ++i) 
+        {
+            if (i < filled_full) {
+                std::cout << FILLED_CHAR_ASCII;
             }
-
-            // Partial block
-            if (filled_full < bar_width && fractional > 0) {
-                int partial_index = static_cast<int>(fractional * 8);
-                if (partial_index > 0 && partial_index < 8) {
-                    std::cout << PARTIAL_CHARS_UNICODE[partial_index];
-                }
-                filled_full++; // Account for the partial block
-            }
-
-            // Empty blocks
-            for (int i = filled_full; i < bar_width; ++i) {
-                std::cout << EMPTY_CHAR_UNICODE;
-            }
-        }
-        else {
-            // ASCII fallback version
-            for (int i = 0; i < bar_width; ++i) {
-                if (i < filled_full) {
-                    std::cout << FILLED_CHAR_ASCII;
-                }
-                else {
-                    std::cout << EMPTY_CHAR_ASCII;
-                }
+            else {
+                std::cout << EMPTY_CHAR_ASCII;
             }
         }
 
@@ -135,13 +110,9 @@ namespace Lumina {
         return ss.str();
     }
 
-    std::string ProgressVisualizer::get_loading_spinner() {
-        if (unicode_supported) {
-            return SPINNER_CHARS_UNICODE[spinner_state];
-        }
-        else {
+    std::string ProgressVisualizer::get_loading_spinner() 
+    {
             return SPINNER_CHARS_ASCII[spinner_state];
-        }
     }
 
     bool ProgressVisualizer::detect_unicode_support() {
@@ -161,7 +132,5 @@ namespace Lumina {
     }
 
     // Initialize static constexpr arrays
-    constexpr const char* ProgressVisualizer::PARTIAL_CHARS_UNICODE[8];
-    constexpr const char* ProgressVisualizer::SPINNER_CHARS_UNICODE[4];
     constexpr const char* ProgressVisualizer::SPINNER_CHARS_ASCII[4];
 }

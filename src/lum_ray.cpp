@@ -1,5 +1,6 @@
 #include "lum_ray.h"
 
+
 namespace Lumina
 {
     Ray::Ray(const point3& origin, const vec3& direction) : origin(origin), direction(direction) {}

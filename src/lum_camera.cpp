@@ -27,19 +27,27 @@ namespace Lumina
         pixel_samples_scale = 1.0 / samples_per_pixel;
 
         // Set up camera position at origin
-        position = point3(0, 0, 0);
+        position = look_from;
 
         // Camera parameters
-        double focal_length = 1.0;  // Distance from camera to viewport
-        double viewport_height = 2.0;  // Height of the viewport in world units
+        auto theta = degrees_to_radians(vfov);
+		auto h = std::tan(theta / 2.0);  // Half height of viewport
+        double viewport_height = 2 * h * focus_distance;
         // Calculate viewport width to maintain aspect ratio
         double viewport_width = viewport_height * (double(image_width) / image_height);
 
+		// Calculate the u,v,w basis vectors
+        
+		// w points from look_from to look_at
+		w = (look_from - look_at).unit_vector();
+		// u points right, perpendicular to w and up
+		u = (up.cross(w)).unit_vector();
+		// v points up, perpendicular to w and u
+		v = w.cross(u).unit_vector();
+
         // Define the viewport vectors
-        // viewport_u points right along the x-axis
-        vec3 viewport_u = vec3(viewport_width, 0, 0);
-        // viewport_v points down along the negative y-axis
-        vec3 viewport_v = vec3(0, -viewport_height, 0);
+        vec3 viewport_u = viewport_width * u;    // Vector across viewport horizontal edge
+        vec3 viewport_v = viewport_height * -v;  // Vector down viewport vertical edge
 
         // Calculate the size of each pixel in world units
         // Divide viewport dimensions by number of pixels
@@ -52,7 +60,7 @@ namespace Lumina
         // Move left by half the viewport width
         // Move up by half the viewport height
         point3 viewport_upper_left = position
-            - vec3(0, 0, focal_length)  // Move back along the z-axis
+            - (focus_distance * w)        // Move back along the z-axis
             - viewport_u / 2.0          // Move left half the viewport width
             - viewport_v / 2.0;         // Move up half the viewport height
 
@@ -61,6 +69,11 @@ namespace Lumina
         // Move right by half a pixel and down by half a pixel
         // This centers the first pixel in its grid cell
         pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
+
+        // Calculate the camera defocus disk basis vectors.
+        auto defocus_radius = focus_distance * std::tan(degrees_to_radians(defocus_angle / 2));
+        defocus_u = u * defocus_radius;
+        defocus_v = v * defocus_radius;
     }
 
     void Camera::Render(const Hittable& world, const std::string& output_file)
@@ -136,6 +149,9 @@ namespace Lumina
 
     Ray Camera::get_ray(int i, int j) const
     {
+        // Construct a camera ray originating from the defocus disk and directed at a randomly
+        // sampled point around the pixel location i, j.
+
         // Get a random offset within the pixel
         vec3 offset = sample_square();
 
@@ -144,9 +160,10 @@ namespace Lumina
             + ((i + offset.x()) * pixel_delta_u)
             + ((j + offset.y()) * pixel_delta_v);
 
-        // Create a ray from the camera position to the pixel sample
-        vec3 ray_direction = pixel_sample - position;
-        return Ray(position, ray_direction);
+        auto ray_origin = (defocus_angle <= 0) ? position : defocus_disk_sample();
+        // Create a ray from the defocus disk sample point to the pixel sample
+        vec3 ray_direction = pixel_sample - ray_origin;
+        return Ray(ray_origin, ray_direction); 
     }
 
     vec3 Camera::sample_square() const
@@ -154,4 +171,13 @@ namespace Lumina
         // Returns a random point in the [-0.5, 0.5] square
         return vec3(random_double() - 0.5, random_double() - 0.5, 0);
     }
+
+    point3 Camera::defocus_disk_sample() const
+    {
+		// Returns a random point on the defocus disk centered at the camera position
+        auto p = vec3::random_in_unit_disk();
+        return position + (p[0] * defocus_u) + (p[1] * defocus_v);
+    }
+
+    
 }

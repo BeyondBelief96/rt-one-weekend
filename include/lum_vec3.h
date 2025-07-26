@@ -42,12 +42,14 @@ namespace Lumina
       vec3 cross(const vec3& v) const;
       vec3 unit_vector() const;
       vec3 reflect(const vec3& normal) const;
+      vec3 refract(const vec3& r, const vec3& normal, double eta_over_etaprime) const;
 
       // Static methods
       static vec3 random();
       static vec3 random(double min, double max);
       static vec3 random_unit_vector_in_unit_sphere();
       static vec3 random_on_hemisphere(const vec3& normal);
+	  static vec3 random_in_unit_disk();
       static bool near_zero(const vec3& v);
   };
 

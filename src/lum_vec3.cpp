@@ -117,6 +117,14 @@ namespace Lumina
       return *this - 2 * dot(normal) * normal;  
   }
 
+  vec3 vec3::refract(const vec3& r, const vec3& normal, double eta_over_etaprime) const
+  {
+      auto cos_theta = std::fmin(-r.dot(normal), 1.0);
+      vec3 r_out_perp = eta_over_etaprime * (r + cos_theta * normal);
+      vec3 r_out_parallel = -std::sqrt(std::fabs(1.0 - r_out_perp.length_squared())) * normal;
+      return r_out_perp + r_out_parallel;
+  }
+
   vec3 vec3::random()
   {
     return vec3(random_double(), random_double(), random_double());
@@ -157,6 +165,21 @@ namespace Lumina
     } else {
       return -on_unit_sphere;
     }
+  }
+
+  /// <summary>
+  /// Generates a random point within a unit disk in the XY plane.
+  /// </summary>
+  /// <returns></returns>
+  vec3 vec3::random_in_unit_disk()
+  {
+      while (true)
+      {
+          vec3 p = vec3(random_double(-1, 1), random_double(-1, 1), 0);
+          if(p.length_squared() < 1) {
+              return p;
+		  }
+      }
   }
 
   bool vec3::near_zero(const vec3& v)

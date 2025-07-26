@@ -25,12 +25,6 @@ namespace Lumina {
         int spinner_state;
         bool unicode_supported;
 
-        // ASCII art elements - Unicode version
-        static constexpr const char* FILLED_CHAR_UNICODE = "█";
-        static constexpr const char* PARTIAL_CHARS_UNICODE[8] = { "", "▏", "▎", "▍", "▌", "▋", "▊", "▉" };
-        static constexpr const char* EMPTY_CHAR_UNICODE = "░";
-        static constexpr const char* SPINNER_CHARS_UNICODE[4] = { "◐", "◓", "◑", "◒" };
-
         // ASCII fallback elements
         static constexpr const char* FILLED_CHAR_ASCII = "#";
         static constexpr const char* EMPTY_CHAR_ASCII = "-";
