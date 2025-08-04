@@ -2,12 +2,19 @@
 
 namespace Lumina
 {
-  Sphere::Sphere(point3 center, double radius, std::shared_ptr<Material> material) : center(center), radius(std::fmax(0, radius)), material(material) {};
+  Sphere::Sphere(point3 center, double radius, std::shared_ptr<Material> material) 
+      : center(center, vec3(0,0,0)), radius(std::fmax(0, radius)), material(material) {};
+
+  Sphere::Sphere(const point3& startPoint, const point3& endPoint, double radius, std::shared_ptr<Material> mat)
+	  : center(startPoint, endPoint - startPoint), radius(std::fmax(0, radius)), material(mat)
+  {
+  }
 
   bool Sphere::hit(const Ray& r, Interval ray_t_interval, HitRecord& rec) const
   {
     // Vector from the ray origin to the center of the sphere.
-    vec3 oc = center - r.getOrigin();
+    point3 currentCenter = center.at(r.getTime());
+    vec3 oc = currentCenter - r.getOrigin();
     // The length squared of the direction of the ray.
     double a = r.getDirection().length_squared();
     // The dot product of the direction of the ray and the vector from the center of the sphere to the origin of the ray.
@@ -40,7 +47,7 @@ namespace Lumina
     rec.t = root;
     rec.p = r.at(rec.t);
     // The outward normal is the direction of the ray at the point of intersection.
-    vec3 outward_normal = (rec.p - center) / radius;
+    vec3 outward_normal = (rec.p - currentCenter) / radius;
     rec.set_face_normal(r, outward_normal);
     rec.material = material;  
     return true;

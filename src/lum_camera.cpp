@@ -163,7 +163,8 @@ namespace Lumina
         auto ray_origin = (defocus_angle <= 0) ? position : defocus_disk_sample();
         // Create a ray from the defocus disk sample point to the pixel sample
         vec3 ray_direction = pixel_sample - ray_origin;
-        return Ray(ray_origin, ray_direction); 
+        auto ray_time = random_double();
+        return Ray(ray_origin, ray_direction, ray_time); 
     }
 
     vec3 Camera::sample_square() const

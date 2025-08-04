@@ -8,10 +8,16 @@ namespace Lumina
   {
     public:
         Sphere() = default;
+
+        // Stationary sphere constructor
         Sphere(point3 center, double radius, std::shared_ptr<Material> material);
-            virtual bool hit(const Ray& r, Interval ray_t_interval, HitRecord& rec) const override;
+        
+		// Moving sphere constructor
+        Sphere(const point3& startPoint, const point3& endPoint, double radius, std::shared_ptr<Material> mat);
+
+        virtual bool hit(const Ray& r, Interval ray_t_interval, HitRecord& rec) const override;
     private:
-      point3 center;
+      Ray center;
       double radius;
       std::shared_ptr<Material> material;
   };

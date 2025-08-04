@@ -28,7 +28,7 @@ namespace Lumina
 			direction = r_in.getDirection().refract(unit_direction, rec.normal, ri);
 		}
 
-		scattered = Ray(rec.p, direction);
+		scattered = Ray(rec.p, direction, r_in.getTime());
 		return true;
 	}
 

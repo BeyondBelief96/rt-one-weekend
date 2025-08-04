@@ -10,7 +10,7 @@ namespace Lumina
 	{
 		vec3 reflected_direction = r_in.getDirection().reflect(rec.normal);
 		reflected_direction = reflected_direction.unit_vector() + (fuzz * vec3::random_unit_vector_in_unit_sphere());
-		scattered = Ray(rec.p, reflected_direction);
+		scattered = Ray(rec.p, reflected_direction, r_in.getTime());
 		attenuation = albedo;
 		return scattered.getDirection().dot(rec.normal) > 0;
 	}
