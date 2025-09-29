@@ -17,7 +17,7 @@ namespace Lumina
     private:
       point3 origin;
       vec3 direction;
-      double time;
+      double time = 0.0f;
   };
 }
 
